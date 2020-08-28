@@ -1,0 +1,8 @@
+prefix=/home/saber/new_ws/src/alg/cmake-build-debug/devel
+
+Name: alg
+Description: Description of alg
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
