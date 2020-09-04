@@ -33,7 +33,7 @@ public:
     bool wallIntersect(Wall wall);
     bool wallIntersect(Wall wall, int i);
     bool intersect(Wall wall1, Wall wall2);
-    int  sign(tf2Scalar scalar);
+    static int  sign(tf2Scalar scalar);
 };
 
 

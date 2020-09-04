@@ -81,7 +81,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-   std_msgs visualization_msgs algo roboteq_motor_controller_driver
+   std_msgs visualization_msgs algo
  )
 
 ################################################

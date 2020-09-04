@@ -12,6 +12,7 @@ class PointArray {
 public:
     ros::Subscriber subpos;
     ros::Subscriber subpoints;
+
     ros::Subscriber subdots;
     ros::Publisher  pubdest;
     ros::Publisher  pubstop;
@@ -22,10 +23,12 @@ public:
     bool Ework;
     bool secondpoint = false;
     int pointI  = 0;
+    unsigned int loop = 0;
     explicit PointArray(ros::NodeHandle *n);
     void     PointTransmitter(const nav_msgs::Odometry::ConstPtr &msg);
     void    handPoint(const std_msgs::Float64::ConstPtr &msg);
     void    createArray(const algo::vector_array::ConstPtr &msg);
+
 };
 
 

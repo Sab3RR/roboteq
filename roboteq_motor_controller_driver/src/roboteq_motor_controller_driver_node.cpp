@@ -58,7 +58,7 @@ void Driver::cmd_vel_callback(const geometry_msgs::Twist& msg){
 } 
 void Driver::roboteq_subscriber(){
 	ros::NodeHandle n; 
- 	cmd_vel_sub = n.subscribe("/cmd_vel",10,&Driver::cmd_vel_callback,this);
+ 	cmd_vel_sub = n.subscribe("/cmd_vel",1,&Driver::cmd_vel_callback,this);
  	
 }
 
@@ -147,7 +147,7 @@ void Driver::run(){
 	
 	std::vector<ros::Publisher> publisherVecH;
     	for (int i = 0; i< KH_vector.size(); i++){
-    	 publisherVecH.push_back(nh.advertise<roboteq_motor_controller_driver::channel_values>(KH_vector[i],100));
+    	 publisherVecH.push_back(nh.advertise<roboteq_motor_controller_driver::channel_values>(KH_vector[i],1));
 	}
 	
 	
@@ -170,7 +170,7 @@ void Driver::run(){
 	
 	std::vector<ros::Publisher> publisherVecL;
 	for(int i=0; i<KL_vector.size(); ++i){
-		publisherVecL.push_back(nh.advertise<roboteq_motor_controller_driver::channel_values>(KL_vector[i],100));
+		publisherVecL.push_back(nh.advertise<roboteq_motor_controller_driver::channel_values>(KL_vector[i],1));
 	}
 		
 	
@@ -192,8 +192,9 @@ void Driver::run(){
 	
 	
 	std::vector<ros::Publisher> publisherVecG;
+
 	for(int i=0; i<KG_vector.size(); ++i){
-		publisherVecG.push_back(nh.advertise<std_msgs::String>(KG_vector[i],100));
+		publisherVecG.push_back(nh.advertise<std_msgs::String>(KG_vector[i],1));
 	}
 	
     	
@@ -201,13 +202,13 @@ void Driver::run(){
     	ser.write(ss1.str());
     	ser.write(ss2.str());
     	ser.write(ss3.str());
-    	read_publisher = nh.advertise<std_msgs::String>("read", 1000);
-    	
-    	
-    	
-    	
-    	
-   ros::Rate loop_rate(5);
+    	read_publisher = nh.advertise<std_msgs::String>("read", 1);
+
+
+
+
+    Driver::roboteq_subscriber();
+   ros::Rate loop_rate(50);
     while(ros::ok()){
         
         
@@ -298,7 +299,7 @@ void Driver::run(){
 	ROS_INFO_STREAM("success!");
 	
 	    
-	Driver::roboteq_subscriber();
+
 
         }
         loop_rate.sleep();

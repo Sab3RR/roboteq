@@ -37,14 +37,20 @@ void PointArray::PointTransmitter(const nav_msgs::Odometry::ConstPtr &msg)
     if (points.size() == 0)
         return ;
     lenght = sqrtf(pow(vecto.x() - points[pointI].x, 2) + pow(vecto.y() - points[pointI].y, 2));
-    std::cout << points[pointI] << std::endl;
+    //std::cout << points[pointI] << std::endl;
     if (lenght < 0.15)
     {
         pointI++;
-        if (points.size() <= pointI)
+        /*if (points.size() <= pointI)
         {
             pubstop.publish(stop);
             pointI--;
+        }*/
+        if (points.size() <= pointI)
+        {
+            pointI = 0;
+            loop++;
+            std::cout << loop << std::endl;
         }
     }
     pubdest.publish(points[pointI]);

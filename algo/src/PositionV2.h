@@ -12,21 +12,29 @@ class PositionV2 {
 public:
     ros::Subscriber subMotor;
     ros::Subscriber subTurner;
+    ros::Subscriber subEncoder;
 
     ros::Publisher pubForce;
     ros::Publisher pubAngle;
     ros::Publisher pubpos;
     ros::Publisher pubdir;
+    ros::Publisher pubMotor;
+    ros::Publisher pubTurner;
+    ros::Publisher pubOdom;
+
 
     float wheelAngle = 0;
+    float enc1 = 0;
+    float enc2 = 0;
 
     tf2::Vector3 pos = tf2::Vector3(0, 0, 0);
     tf2::Vector3 center;
     tf2::Vector3 dir = tf2::Vector3(1, 0, 0);
 
     explicit PositionV2(ros::NodeHandle *n);
-    void motion(const std_msgs::Int32::ConstPtr &msg);
-    void turner(const std_msgs::Int32::ConstPtr &msg);
+    void motion(float msg);
+    void turner(float msg);
+    void encoderCounter(const roboteq_motor_controller_driver::channel_values &msg);
 };
 
 

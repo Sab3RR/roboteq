@@ -99,14 +99,22 @@ dotting::dotting(ros::NodeHandle *n) {
     sectors[6].leftdown[1] = 24.85f;
     sectors[6].leftup[0] = 8.85f;
     sectors[6].leftup[1] = 34.85f;*/
-    sectors[0].rightdown[0] = 0.75f;
-    sectors[0].rightdown[1] = -1.f;
-    sectors[0].rightup[0] = 0.75f;
-    sectors[0].rightup[1] = 1.f;
-    sectors[0].leftdown[0] = 2.75f;
-    sectors[0].leftdown[1] = -1.f;
-    sectors[0].leftup[0] = 2.75f;
-    sectors[0].leftup[1] = 1.f;
+//    sectors[0].rightdown[0] = 0.75f;
+//    sectors[0].rightdown[1] = -1.f;
+//    sectors[0].rightup[0] = 0.75f;
+//    sectors[0].rightup[1] = 1.f;
+//    sectors[0].leftdown[0] = 2.75f;
+//    sectors[0].leftdown[1] = -1.f;
+//    sectors[0].leftup[0] = 2.75f;
+//    sectors[0].leftup[1] = 1.f;
+    sectors[0].rightdown[0] = 1.f + 0.40f + 0.54f;
+    sectors[0].rightdown[1] = 0.37f + 3.04f - 2.75f;
+    sectors[0].rightup[0] = 1.f + 0.40f + 0.54f;
+    sectors[0].rightup[1] = 0.37f + 3.04f + 0.5f;
+    sectors[0].leftdown[0] = 1.f + 0.40f + 0.54f + 2.83f + 0.75f;
+    sectors[0].leftdown[1] = 0.37f + 3.04f - 2.75f;
+    sectors[0].leftup[0] = 1.f + 0.40f + 0.54f + 2.83f + 0.75f;
+    sectors[0].leftup[1] = 0.37f + 3.04f + 0.5f;
 
 
 
@@ -459,8 +467,19 @@ void    dotting::startdotting()
         coorddown = 0.f;
         if (i == 0)
         {
-            dot[0] = 1.f;
-            dot[1] = 0.f;
+           // dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
+           // dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
+            dot[0] = 0;
+            dot[1] = 2;
+            dots.push_back(dot);
+            dot[0] = 1.5f;
+            dot[1] = 2;
+            dots.push_back(dot);
+            dot[0] = 1.5f;
+            dot[1] = 0;
+            dots.push_back(dot);
+            dot[0] = 0;
+            dot[1] = 0;
             dots.push_back(dot);
         }
         else if (i == 1)
@@ -480,12 +499,16 @@ void    dotting::startdotting()
             dot[1] = 0.75;
             dots.push_back(dot);
         }
-        createWay(sectors[i]);
-        if (i == 0)
+        //createWay(sectors[i]);
+        /*if (i == 0)
         {
-            dot[0] = 0.5f;
+            dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
+            dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
             dots.push_back(dot);
-        }
+            dot[0] = 0;
+            dot[1] = 0;
+            dots.push_back(dot);
+        }*/
     }
     visualization_msgs::Marker line_list, points_list;
     line_list.header.frame_id = "/odom";

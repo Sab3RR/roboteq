@@ -16,13 +16,7 @@
 -- catkin 0.7.28
 -- BUILD_SHARED_LIBS is on
 -- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
-CMake Error at /opt/ros/melodic/share/genmsg/cmake/genmsg-extras.cmake:263 (message):
-  Messages depends on unknown pkg: roboteq_motor_controller_driver (Missing
-  'find_package(roboteq_motor_controller_driver)'?)
-Call Stack (most recent call first):
-  CMakeLists.txt:82 (generate_messages)
-
-
--- Configuring incomplete, errors occurred!
-See also "/home/sab3r/ws/src/algo/cmake-build-debug/CMakeFiles/CMakeOutput.log".
-See also "/home/sab3r/ws/src/algo/cmake-build-debug/CMakeFiles/CMakeError.log".
+-- algo: 4 messages, 0 services
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/sab3r/ws/src/algo/cmake-build-debug

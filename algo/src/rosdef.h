@@ -31,6 +31,7 @@
 #include "algo/vector_msg.h"
 #include "algo/vector_array.h"
 #include "algo/point_msg.h"
+#include "roboteq_motor_controller_driver/channel_values.h"
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -38,11 +39,12 @@
 #include <termios.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
+
 //#include <serial/serial.h>
 #define LENGTH norm_2
-#define TICKLENGHT 0.1
-#define ANGULARTICK 0.001
-#define BASIC 1
+#define TICKLENGHT ((0.15 * M_PI) / (4096 * 9.33))
+#define ANGULARTICK (M_PI * 2 / (4096 * (110 / 30.f)))
+#define BASIC 0.96
 #define STARTFORCE
 #define ANGLEFORCE 0.01
 #define WEIGHT 50
