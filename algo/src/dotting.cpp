@@ -469,17 +469,17 @@ void    dotting::startdotting()
         {
            // dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
            // dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
-            dot[0] = 0;
-            dot[1] = 2;
+            dot[0] = 2;
+            dot[1] = -1;
             dots.push_back(dot);
-            dot[0] = 1.5f;
-            dot[1] = 2;
-            dots.push_back(dot);
-            dot[0] = 1.5f;
-            dot[1] = 0;
+            dot[0] = 2;
+            dot[1] = 1;
             dots.push_back(dot);
             dot[0] = 0;
-            dot[1] = 0;
+            dot[1] = -1;
+            dots.push_back(dot);
+            dot[0] = 0;
+            dot[1] = 1;
             dots.push_back(dot);
         }
         else if (i == 1)

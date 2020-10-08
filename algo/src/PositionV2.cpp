@@ -44,10 +44,10 @@ void PositionV2::turner(float msg)
     tf2::Vector3 direction;
     tf2::Vector3 rot_axis(0, 0, 1);
     wheelAngle += res * ANGULARTICK;
-    if (wheelAngle > 2.146807225)
-        wheelAngle = 2.146807225;
-    else if (wheelAngle < -2.146807225)
-        wheelAngle = -2.146807225;
+    if (wheelAngle > 2.15)
+        wheelAngle = 2.15;
+    else if (wheelAngle < -2.15)
+        wheelAngle = -2.15;
     center = pos + dir * -BASIC + tf2::tf2Cross(dir ,rot_axis).normalize() * (BASIC / tan(wheelAngle));
 //    if (wheelAngle < 0)
 //    {
@@ -71,7 +71,7 @@ void PositionV2::turner(float msg)
 
 void PositionV2::motion(float msg)
 {
-    float angle;
+    double angle;
     int res;
     res = msg - enc1;
     enc1 = msg;

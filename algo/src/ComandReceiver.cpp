@@ -1,6 +1,4 @@
 //
-// Created by sab3r on 24.03.20.
-//
 
 #include "ComandReceiver.h"
 
@@ -10,11 +8,148 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
     subpos = n->subscribe("position", 1, &ComandReceiver::SetSpeed, this);
     subdest = n->subscribe("destination", 1, &ComandReceiver::SetPoint, this);
     subWheelAngle = n->subscribe("wheelAngle", 1, &ComandReceiver::Angle, this);
+    subcenter = n->subscribe("Center", 1, &ComandReceiver::Center, this);
+    subleft = n->subscribe("Left", 1, &ComandReceiver::Left, this);
+    subright = n->subscribe("Right", 1, &ComandReceiver::Right, this);
     pubAr = n->advertise<std_msgs::Float64MultiArray>("MotorForce", 1);
     pubTw = n->advertise<geometry_msgs::Twist>("cmd_vel", 10);
     substop = n->subscribe("stop", 1, &ComandReceiver::stop, this);
+    subdismet = n->subscribe("backdistance", 1, &ComandReceiver::backDistance, this);
+    subbackcenter = n->subscribe("backcenter", 1, &ComandReceiver::backcenter, this);
+    subbackright = n->subscribe("backright", 1, &ComandReceiver::backright, this);
+    subbackleft = n->subscribe("backleft", 1, &ComandReceiver::backleft, this);
+    subrightcenter = n->subscribe("rightcenter", 1, &ComandReceiver::rightcenter, this);
+    subrightforward = n->subscribe("rightforward", 1, &ComandReceiver::rightforward, this);
+    subrightback = n->subscribe("rightback", 1, &ComandReceiver::rightback, this);
+    subleftcenter = n->subscribe("leftcenter", 1, &ComandReceiver::leftcenter, this);
+    subleftforward = n->subscribe("leftforward", 1, &ComandReceiver::leftforward, this);
+    subleftback = n->subscribe("leftback", 1, &ComandReceiver::leftback, this);
+    subforwardcenter = n->subscribe("forwardcenter", 1, &ComandReceiver::forwardcenter, this);
+    subforwardright = n->subscribe("forwardright", 1, &ComandReceiver::forwardright, this);
+    subforwardleft = n->subscribe("forwardleft", 1, &ComandReceiver::forwardleft, this);
+
+
+
     max_speed = 0;
     sleep(1);
+}
+
+//
+// Created by sab3r on 24.03.20.
+void ComandReceiver::backcenter(const std_msgs::Float32::ConstPtr &msg)
+{
+    fbackcenter = msg->data;
+}
+
+void ComandReceiver::backright(const std_msgs::Float32::ConstPtr &msg)
+{
+    fbackright = msg->data;
+}
+
+void ComandReceiver::backleft(const std_msgs::Float32::ConstPtr &msg)
+{
+    fbackleft = msg->data;
+}
+
+void ComandReceiver::rightcenter(const std_msgs::Float32::ConstPtr &msg)
+{
+    frightcenter = msg->data;
+    if (frightcenter < 30 || frightforward < 30 || frightback < 30)
+        letright = true;
+    else
+        letright = false;
+}
+
+void ComandReceiver::rightforward(const std_msgs::Float32::ConstPtr &msg)
+{
+    frightforward = msg->data;
+    if (frightcenter < 30 || frightforward < 30 || frightback < 30)
+        letright = true;
+    else
+        letright = false;
+}
+
+void ComandReceiver::rightback(const std_msgs::Float32::ConstPtr &msg)
+{
+    frightback = msg->data;
+    if (frightcenter < 30 || frightforward < 30 || frightback < 30)
+        letright = true;
+    else
+        letright = false;
+}
+
+void ComandReceiver::leftcenter(const std_msgs::Float32::ConstPtr &msg)
+{
+    fleftcenter = msg->data;
+    if (fleftcenter < 30 || fleftback < 30 || fleftforward < 30)
+        letleft = true;
+    else
+        letleft = false;
+}
+
+void ComandReceiver::leftforward(const std_msgs::Float32::ConstPtr &msg)
+{
+    fleftforward = msg->data;
+    if (fleftcenter < 30 || fleftback < 30 || fleftforward < 30)
+        letleft = true;
+    else
+        letleft = false;
+}
+
+void ComandReceiver::leftback(const std_msgs::Float32::ConstPtr &msg)
+{
+    fleftback = msg->data;
+    if (fleftcenter < 30 || fleftback < 30 || fleftforward < 30)
+        letleft = true;
+    else
+        letleft = false;
+}
+
+void ComandReceiver::forwardcenter(const std_msgs::Float32::ConstPtr &msg)
+{
+    fforwardcenter = msg->data;
+    if (fforwardcenter < 30 || fforwardleft < 30 || fforwardright < 30)
+        letforward = true;
+    else
+        letforward = false;
+}
+
+void ComandReceiver::forwardright(const std_msgs::Float32::ConstPtr &msg)
+{
+    fforwardright = msg->data;
+    if (fforwardcenter < 30 || fforwardleft < 30 || fforwardright < 30)
+        letforward = true;
+    else
+        letforward = false;
+}
+
+void ComandReceiver::forwardleft(const std_msgs::Float32::ConstPtr &msg)
+{
+    fforwardleft = msg->data;
+    if (fforwardcenter < 30 || fforwardleft < 30 || fforwardright < 30)
+        letforward = true;
+    else
+        letforward = false;
+}
+
+void ComandReceiver::backDistance(const std_msgs::Float32::ConstPtr &msg)
+{
+    backdistance = msg->data;
+}
+
+void ComandReceiver::Center(const std_msgs::Bool::ConstPtr &msg)
+{
+    center = msg->data;
+}
+
+void ComandReceiver::Left(const std_msgs::Bool::ConstPtr &msg)
+{
+    left = msg->data;
+}
+
+void ComandReceiver::Right(const std_msgs::Bool::ConstPtr &msg)
+{
+    right = msg->data;
 }
 
 void ComandReceiver::SetPoint(const algo::vector_msg::ConstPtr &msg)
@@ -55,6 +190,7 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
 
     tf2::Quaternion quat(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
     tf2::Vector3 vecto(1, 0, 0);
+    tf2::Vector3 basicTop(0, 0, 1);
     tf2::Vector3 rotated_vector = tf2::quatRotate(quat, vecto);
     Tw.linear.x = 0;
     Tw.linear.y = 0;
@@ -66,12 +202,185 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
     pos.setY(msg->pose.pose.position.y);
     pos.setZ(0);
     dir = rotated_vector;
+    tf2::Vector3 pPos(-0.23, -0.07, 0);
+    tf2::Vector3 pDir(1, 0.05 ,0);
+    tf2::Vector3 lpos(1, 0 ,0);
+    tf2::Vector3 lrdir(1, -1,0);
+    tf2::Vector3 lldir(1, 1, 0);
 
+    lrdir.normalize();
+    lldir.normalize();
+    pDir.normalize();
+    angle = (pos - pPos).angle(pDir);
+/*    if ((pos - pPos).length() < 0.05)
+        pause = true;
+    else
+        pause = false;
+    if ((pos + dir * (-BASIC - 0.15) - pPos).length() * sin((pos + dir * (-BASIC - 0.15) - pPos).angle(pDir)) < 0.025)
+        center = true;
+    else
+        center = false;*/
+//    {
+//        angle = (pos + dir * (-BASIC - 0.15)).angle(lrdir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) - lpos).length() * sin((pos + dir * (-BASIC - 0.15) - lpos).angle(lrdir)) < 0.025)
+//                center = true;
+//            else
+//                center = false;
+//        }
+//        angle = (pos + dir * (-BASIC - 0.15)).angle(lldir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) - lpos).length() * sin((pos + dir * (-BASIC - 0.15) - lpos).angle(lldir)) < 0.025)
+//                center = true;
+//            else
+//                center = false;
+//        }
+//    }
+
+    /*if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - pPos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - pPos).angle(pDir)) < 0.025)
+        right = true;
+    else
+        right = false;*/
+//    {
+//        angle = (pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03).angle(lrdir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - lpos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - lpos).angle(lrdir)) < 0.025)
+//                right = true;
+//            else
+//                right = false;
+//        }
+//        angle = (pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03).angle(lldir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - lpos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(dir, basicTop).normalized() * 0.03 - lpos).angle(lldir)) < 0.025)
+//                right = true;
+//            else
+//                right = false;
+//        }
+//    }
+    /*if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - pPos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - pPos).angle(pDir)) < 0.025)
+        left = true;
+    else
+        left = false;*/
+//    {
+//        angle = (pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03).angle(lrdir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - lpos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - lpos).angle(lrdir)) < 0.025)
+//                left = true;
+//            else
+//                left = false;
+//        }
+//        angle = (pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03).angle(lldir);
+//        if (angle < 1.57)
+//        {
+//            if ((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - lpos).length() * sin((pos + dir * (-BASIC - 0.15) + tf2::tf2Cross(basicTop, dir).normalized() * 0.03 - lpos).angle(lldir)) < 0.025)
+//                left = true;
+//            else
+//                left = false;
+//        }
+//    }
+
+    if (center || right || left)
+        home = true;
+    if (center && right && left)
+        pause = true;
+    else
+        pause = false;
+    if (left && !right)
+    {
+        lastright = false;
+        lastleft = true;
+    }
+    else if (right && !left)
+    {
+        lastleft = false;
+        lastright = true;
+    }
+    if (home)
+        rev = true;
+    else
+        rev = false;
+    if ((fforwardcenter < 60 || fforwardleft < 60 || fforwardright < 60) && revf)
+    {
+        revf = true;
+        dest = pos + dir;
+    }
+    else
+        revf = false;
+//    if (backdistance < 0.16)
+//        pause = true;
+    if (home)
+        dest = (pos + dir * center +  dir.rotate(basicTop, -1) * right + dir.rotate(basicTop, 1) * left);
+    if (!center && !left && !right && home)
+        dest = pos + dir.rotate(basicTop, -1.57) * lastright + dir.rotate(basicTop, 1.57) * lastleft;
+    if (letforward && !home)
+    {
+        if (letright && !letleft)
+        {
+            dest = pos + dir.rotate(basicTop, -1.57);
+            revf = false;
+        }
+        else if (letleft && !letright)
+        {
+            dest = pos + dir.rotate(basicTop, 1.57);
+            revf = false;
+        }
+        else
+        {
+            dest = pos + dir;
+            revf = true;
+        }
+    }
+    else if (letright)
+    {
+        if (tf2::tf2Cross(dir, dest - pos).z() < 0)
+        {
+            dest = pos + dir;
+        }
+    }
+    else if (letleft)
+    {
+        if (tf2::tf2Cross(dir, dest - pos).z() > 0)
+        {
+            dest = pos + dir;
+        }
+    }
+
+//
+//    parking
+//    didnt work
+//    if (angle > 0.01)
+//    {
+//        dest = pPos + pDir * ((pos - pPos).length() * cos(angle));
+//        rev = false;
+//    }
+//    else
+//    {
+//        angle = dir.angle(pDir);
+//        if (angle < 0.1)
+//        {
+//            if(tf2::tf2Cross(dir, pDir).z() > 0)
+//                angle *= -1;
+//            dest = pos + dir.rotate(basicTop, angle) * 0.5;
+//            rev = true;
+//        }
+//        else
+//        {
+//            dest = pPos + pDir * ((pos - pPos).length() * cos((pos - pPos).angle(pDir))) + pDir * 0.5;
+//            rev = false;
+//        }
+//    }
     angle = dir.angle(dest - pos);
+
     if (tf2::tf2Cross(dir, dest - pos).z() > 0)
     {
         angle *= -1;
     }
+
     float nAngle = angle + (123 * M_PI / 180);
     if (angle < -0.1)
     {
@@ -86,7 +395,12 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
         if (wheelAngle > nAngle) {
             wheel = wheel * (-1);
         }
-        Tw.linear.x = 200;
+        if (speed > 200)
+            Tw.linear.x = 100;
+        else if (speed < 200 && speed > 100)
+            Tw.linear.x = 300 - speed;
+        else
+            Tw.linear.x = 200;
     }
     else if (angle > 0.1)
     {
@@ -101,7 +415,12 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
         {
            wheel = wheel * (-1);
         }
-        Tw.linear.x = 200;
+        if (speed > 200)
+            Tw.linear.x = 100;
+        else if (speed < 200 && speed > 100)
+            Tw.linear.x = 300 - speed;
+        else
+            Tw.linear.x = 200;
     }
     else
     {
@@ -116,11 +435,28 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
         {
             wheel = wheel * (-1);
         }
-        Tw.linear.x = 200;
+        if (speed > 200)
+            Tw.linear.x = 100;
+        else if (speed < 200 && speed > 100)
+            Tw.linear.x = 300 - speed;
+        else
+            Tw.linear.x = 200;
     }
+    Tw.linear.x = 500;
+//    if (abs(nAngle - wheelAngle) > 0.01)
+//        Tw.linear.x = 70;
+    if (rev || revf)
+        Tw.linear.x *= -1;
     if (pause)
         Tw.linear.x = 0;
+
     Tw.angular.z = wheel;
+    if (angle > 1.57)
+        angle = 1.57;
+    else if (angle < -1.57)
+        angle = -1.57;
+    Tw.angular.z = (angle / ANGULARTICK) / 10.f;
+
     pubTw.publish(Tw);
 
 //    usleep(150000);

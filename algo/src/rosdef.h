@@ -42,8 +42,8 @@
 
 //#include <serial/serial.h>
 #define LENGTH norm_2
-#define TICKLENGHT ((0.15 * M_PI) / (4096 * 9.33))
-#define ANGULARTICK (M_PI * 2 / (4096 * (110 / 30.f)))
+#define TICKLENGHT ((0.15 * M_PIf64) / (4096 * (double)9.33))
+#define ANGULARTICK (M_PIf64 * 2 / (4096 * (110 / (double)30)))
 #define BASIC 0.96
 #define STARTFORCE
 #define ANGLEFORCE 0.01

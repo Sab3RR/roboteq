@@ -22,7 +22,8 @@ void ObjectsFromLaserV2::odomSub(const nav_msgs::Odometry::ConstPtr &msg)
     tf::Vector3 rotation_vector(0, 0, 1);
     rotation.setValue(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
     tf::Vector3 rotated_vector = tf::quatRotate(rotation, vector);
-    rotated_vector.rotate(rotation_vector, 5.06145);
+    pos = pos + dir * -0.7;
+    rotated_vector = rotated_vector.rotate(rotation_vector, M_PI_2);
     dir.setValue(rotated_vector.x(), rotated_vector.y(), 0);
 }
 
@@ -37,13 +38,13 @@ void ObjectsFromLaserV2::AddObjects(const sensor_msgs::LaserScan::ConstPtr &msg)
     int i = 0;
     for(auto range = msg->ranges.begin(); range != msg->ranges.end(); range++)
     {
-        if (*range == INFINITY || i % 2 == 0)
+        if (*range > 3 || i % 2 == 0)
         {
             i++;
             continue;
         }
         angle = msg->angle_min + msg->angle_increment * i;
-        if (angle > -2.0 && angle < 2.0)
+        if (angle > -M_PI && angle < 0)
         {
             i++;
             continue;
