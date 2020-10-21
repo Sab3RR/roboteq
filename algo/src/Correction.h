@@ -27,6 +27,7 @@ class Correction {
     explicit    Correction(ros::NodeHandle *n);
     void        Rwheel(const std_msgs::Int32::ConstPtr &msg);
     void        Lwheel(const std_msgs::Int32::ConstPtr &msg);
+    void        direction(int rwheel, int lwheel, SnapShot shot);
 };
 
 

@@ -32,3 +32,12 @@ void Correction::Lwheel(const std_msgs::Int32::ConstPtr &msg)
     shot.secs = ros::Time::now().toSec();
     shots.push_back(shot);
 }
+
+void Correction::direction(int rwheel, int lwheel, SnapShot shot) {
+    double angle;
+    tf2::Vector3 basic(1, 0, 0);
+    tf2::Vector3 basicTop(0,1,0);
+
+    angle = (rwheel - lwheel) * (0.25 * M_PI / 32.f) / 0.608;
+    shot.dir = basic.rotate(basicTop, angle);
+}
