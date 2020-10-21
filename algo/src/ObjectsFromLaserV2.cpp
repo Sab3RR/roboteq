@@ -8,7 +8,7 @@ ObjectsFromLaserV2::ObjectsFromLaserV2(ros::NodeHandle *n)
 {
     subOd = n->subscribe("odom", 1, &ObjectsFromLaserV2::odomSub, this);
     subLas = n->subscribe("scan", 1, &ObjectsFromLaserV2::AddObjects, this);
-    vis_pub = n->advertise<visualization_msgs::MarkerArray>( "visualization_marker_array", 0 );
+    vis_pub = n->advertise<visualization_msgs::MarkerArray>( "visualization_marker_array", 1 );
     points_pub = n->advertise<algo::point_msg>( "nav_points", 1 );
 }
 
@@ -22,9 +22,10 @@ void ObjectsFromLaserV2::odomSub(const nav_msgs::Odometry::ConstPtr &msg)
     tf::Vector3 rotation_vector(0, 0, 1);
     rotation.setValue(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
     tf::Vector3 rotated_vector = tf::quatRotate(rotation, vector);
-    pos = pos + dir * -0.7;
+
     rotated_vector = rotated_vector.rotate(rotation_vector, M_PI_2);
     dir.setValue(rotated_vector.x(), rotated_vector.y(), 0);
+    pos = pos + dir * -0.7;
 }
 
 void ObjectsFromLaserV2::AddObjects(const sensor_msgs::LaserScan::ConstPtr &msg)

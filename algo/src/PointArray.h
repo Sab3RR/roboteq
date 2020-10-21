@@ -16,6 +16,7 @@ public:
     ros::Subscriber subdots;
     ros::Publisher  pubdest;
     ros::Publisher  pubstop;
+    ros::Publisher  pubprevdest;
 
     std::vector<algo::vector_msg> points;
     algo::vector_msg hendpoint;

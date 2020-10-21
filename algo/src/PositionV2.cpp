@@ -15,9 +15,18 @@ PositionV2::PositionV2(ros::NodeHandle *n)
     pubMotor = n->advertise<std_msgs::Int32>("motion", 1);
     pubTurner = n->advertise<std_msgs::Int32>("turner", 1);
     pubOdom = n->advertise<nav_msgs::Odometry>("odom", 1);
-
+    subFCompas = n->subscribe("Fcompas", 1, &PositionV2::Fcompas, this);
 }
 
+void PositionV2::Fcompas(const std_msgs::Float64::ConstPtr &msg)
+{
+    tf2::Vector3 basic(1, 0, 0);
+    tf2::Vector3 basicTop(0, 0, 1);
+
+    Cdir = basic.rotate(basicTop, -(M_PI/180.f) * msg->data);
+//    if (abs(tf2::tf2Angle(dir, Cdir)) > 0.02)
+//    dir = Cdir;
+}
 
 
 void PositionV2::encoderCounter(const roboteq_motor_controller_driver::channel_values &msg)
@@ -35,20 +44,23 @@ void PositionV2::encoderCounter(const roboteq_motor_controller_driver::channel_v
 
 void PositionV2::turner(float msg)
 {
-    float angle;
-    float lenght;
+    double angle;
+    double lenght;
     int res;
     res = msg - enc2;
     enc2 = msg;
     std_msgs::Float32 newMsg;
     tf2::Vector3 direction;
     tf2::Vector3 rot_axis(0, 0, 1);
-    wheelAngle += res * ANGULARTICK;
+    wheelAngle = msg * ANGULARTICK;
+
     if (wheelAngle > 2.15)
         wheelAngle = 2.15;
     else if (wheelAngle < -2.15)
         wheelAngle = -2.15;
-    center = pos + dir * -BASIC + tf2::tf2Cross(dir ,rot_axis).normalize() * (BASIC / tan(wheelAngle));
+    if (prevAngle != wheelAngle)
+        center = pos + dir * -BASIC + tf2::tf2Cross(dir ,rot_axis).normalize() * (BASIC / tan(wheelAngle));
+    prevAngle = wheelAngle;
 //    if (wheelAngle < 0)
 //    {
 //        angle = M_PI / 2 + wheelAngle;
@@ -91,14 +103,15 @@ void PositionV2::motion(float msg)
 //        if ((tf2::tf2Cross(toPos , basic)).z() > 0)
 //            angle *= -1;
 //        angle = angle - (TICKLENGHT * msg->data / toPos.length());
-        toPos = toPos.rotate(basicTop, TICKLENGHT * res / toPos.length());
+        toPos = toPos.rotate(basicTop, tf2Scalar(TICKLENGHT * res / (double)toPos.length()));
 //        pos.setX(center.x() + toPos.length() * cos(angle));
 //        pos.setY(center.y() + toPos.length() * sin(angle));
 //        toPos = pos - center;
-//      dir = toPos.normalized().cross(-basicTop);
-        dir = (dir * toPos.length()).rotate(basicTop, TICKLENGHT * res / toPos.length()).normalize();
+      dir = toPos.cross(-basicTop).normalized().rotate(basicTop, tf2Scalar(wheelAngle));
+//        dir = (dir * toPos.length()).rotate(basicTop, TICKLENGHT * res / toPos.length()).normalize();
+        buff = pos;
         pos = center + toPos;
-        std::cout << dir.cross(toPos.normalized().cross(-basicTop)).z() << std::endl;
+//        std::cout << dir.cross(toPos.normalized().cross(-basicTop)).z() << std::endl;
     }
     else if (wheelAngle > 0)
     {
@@ -108,16 +121,19 @@ void PositionV2::motion(float msg)
 //            angle *= -1;
 //       angle = angle + (TICKLENGHT * msg->data / toPos.length());
 
-        toPos = toPos.rotate(basicTop, -TICKLENGHT * res / toPos.length());
+        toPos = toPos.rotate(basicTop, tf2Scalar(-TICKLENGHT * res / (double)toPos.length()));
 
 //        pos.setX(center.x() + toPos.length() * cos(angle));
 //        pos.setY(center.y() + toPos.length() * sin(angle));
 //        toPos = pos - center;
-//        dir = toPos.normalized().cross(basicTop);
-        dir = (dir * toPos.length()).rotate(basicTop, -TICKLENGHT * res / toPos.length()).normalize();
+        dir = toPos.cross(basicTop).normalized().rotate(basicTop, tf2Scalar(wheelAngle));
+//        dir = (dir * toPos.length()).rotate(basicTop, -TICKLENGHT * res / toPos.length()).normalize();
+        buff = pos;
         pos = center + toPos;
-        std::cout << dir.cross(toPos.normalized().cross(basicTop)).z() << std::endl;
+
+//        std::cout << dir.cross(toPos.normalized().cross(basicTop)).z() << std::endl;
     }
+    std::cout << TICKLENGHT * res - (buff - pos).length() << std::endl;
     tf2::Quaternion quat;
 
     tf2::Vector3 rot;

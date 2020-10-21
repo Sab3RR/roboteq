@@ -7,6 +7,7 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
     subdir = n->subscribe("odom", 1, &ComandReceiver::Setdir, this);
     subpos = n->subscribe("position", 1, &ComandReceiver::SetSpeed, this);
     subdest = n->subscribe("destination", 1, &ComandReceiver::SetPoint, this);
+    subprevdest = n->subscribe("prevdestination", 1, &ComandReceiver::SetPrevPoint, this);
     subWheelAngle = n->subscribe("wheelAngle", 1, &ComandReceiver::Angle, this);
     subcenter = n->subscribe("Center", 1, &ComandReceiver::Center, this);
     subleft = n->subscribe("Left", 1, &ComandReceiver::Left, this);
@@ -27,7 +28,8 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
     subforwardcenter = n->subscribe("forwardcenter", 1, &ComandReceiver::forwardcenter, this);
     subforwardright = n->subscribe("forwardright", 1, &ComandReceiver::forwardright, this);
     subforwardleft = n->subscribe("forwardleft", 1, &ComandReceiver::forwardleft, this);
-
+    subrwheel = n->subscribe("rwheel_ticks", 1, &ComandReceiver::Rwheel, this);
+    sublwheel = n->subscribe("lwheel_ticks", 1, &ComandReceiver::Lwheel, this);
 
 
     max_speed = 0;
@@ -36,6 +38,16 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
 
 //
 // Created by sab3r on 24.03.20.
+void ComandReceiver::Rwheel(const std_msgs::Int32::ConstPtr &msg)
+{
+    rwheel = msg->data;
+}
+
+void ComandReceiver::Lwheel(const std_msgs::Int32::ConstPtr &msg)
+{
+    lwheel = msg->data;
+}
+
 void ComandReceiver::backcenter(const std_msgs::Float32::ConstPtr &msg)
 {
     fbackcenter = msg->data;
@@ -159,6 +171,13 @@ void ComandReceiver::SetPoint(const algo::vector_msg::ConstPtr &msg)
     dest.setZ(0);
 }
 
+void ComandReceiver::SetPrevPoint(const algo::vector_msg::ConstPtr &msg)
+{
+    prevdest.setX(msg->x);
+    prevdest.setY(msg->y);
+    prevdest.setZ(0);
+}
+
 void ComandReceiver::SetSpeed(const algo::vector_msg::ConstPtr &msg)
 {
     pos.setX(msg->x);
@@ -173,7 +192,7 @@ void ComandReceiver::Angle(const std_msgs::Float32::ConstPtr &msg)
 
 void ComandReceiver::stop(const std_msgs::Bool::ConstPtr &msg)
 {
-    pause = msg->data;
+    Stop = msg->data;
 }
 
 void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
@@ -211,6 +230,8 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
     lrdir.normalize();
     lldir.normalize();
     pDir.normalize();
+    pPos = prevdest;
+    pDir = (dest - prevdest).normalized();
     angle = (pos - pPos).angle(pDir);
 /*    if ((pos - pPos).length() < 0.05)
         pause = true;
@@ -349,6 +370,11 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
             dest = pos + dir;
         }
     }
+    angle = (pos - pPos).angle(pDir);
+    tf2::Vector3 newdest = pPos + pDir * (((pos - pPos).length()) * cos(angle)) + pDir / 2.f;
+    if ((dest - pPos).length() > (newdest - pPos).length())
+        dest = newdest;
+    //dest = pPos + pDir * (((pos - pPos).length() + 1)  * cos(angle));
 
 //
 //    parking
@@ -374,8 +400,8 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
 //            rev = false;
 //        }
 //    }
-    angle = dir.angle(dest - pos);
 
+    angle = dir.angle(dest - pos);
     if (tf2::tf2Cross(dir, dest - pos).z() > 0)
     {
         angle *= -1;
@@ -443,21 +469,30 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
             Tw.linear.x = 200;
     }
     Tw.linear.x = 500;
-//    if (abs(nAngle - wheelAngle) > 0.01)
-//        Tw.linear.x = 70;
+    if (abs(angle) < 0.03)
+        Tw.linear.x = 500;
     if (rev || revf)
         Tw.linear.x *= -1;
-    if (pause)
+    if (pause || Stop)
         Tw.linear.x = 0;
 
     Tw.angular.z = wheel;
-    if (angle > 1.57)
-        angle = 1.57;
-    else if (angle < -1.57)
-        angle = -1.57;
+    if (angle > 1.2)
+        angle = 1.2;
+    else if (angle < -1.2)
+        angle = -1.2;
     Tw.angular.z = (angle / ANGULARTICK) / 10.f;
 
-    pubTw.publish(Tw);
+//    pubTw.publish(Tw);
+
+    angle = (rwheel - lwheel) * (0.25 * M_PI / 32.f) / 0.608;
+    while (angle > M_PI * 2)
+        angle -= M_PI * 2;
+    while (angle < -M_PI * 2)
+        angle += M_PI * 2;
+
+    std::cout << angle << std::endl;
+
 
 //    usleep(150000);
 //    Ar.data.push_back(0);

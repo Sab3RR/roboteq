@@ -41,11 +41,11 @@ void PointArray::PointTransmitter(const nav_msgs::Odometry::ConstPtr &msg)
     if (lenght < 0.15)
     {
         pointI++;
-        /*if (points.size() <= pointI)
-        {
-            pubstop.publish(stop);
-            pointI--;
-        }*/
+//        if (points.size() <= pointI)
+//        {
+//            pubstop.publish(stop);
+//            pointI--;
+//        }
         if (points.size() <= pointI)
         {
             pointI = 0;
@@ -54,12 +54,14 @@ void PointArray::PointTransmitter(const nav_msgs::Odometry::ConstPtr &msg)
         }
     }
     pubdest.publish(points[pointI]);
+    if (pointI != 0)
+        pubprevdest.publish(points[pointI - 1]);
 }
 
 void    PointArray::createArray(const algo::vector_array::ConstPtr &msg)
 {
     algo::vector_msg v;
-    for (auto j = msg->vec.begin(); j != msg->vec.end(); j++)
+     for (auto j = msg->vec.begin(); j != msg->vec.end(); j++)
     {
         v.x = j->x;
         v.y = j->y;
@@ -75,6 +77,8 @@ PointArray::PointArray(ros::NodeHandle *n)
     subpoints = n->subscribe("handpoint", 0, &PointArray::handPoint, this);
     subdots = n->subscribe("dots", 0, &PointArray::createArray, this);
     pubdest = n->advertise<algo::vector_msg>("destination", 1);
+    pubprevdest = n->advertise<algo::vector_msg>("prevdestination", 1);
+
     pubstop = n->advertise<std_msgs::Bool>("stop", 1);
 
    /* point.x = 1;

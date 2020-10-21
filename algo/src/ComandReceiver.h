@@ -15,6 +15,7 @@ public:
     ros::Subscriber subdir;
     ros::Subscriber subpos;
     ros::Subscriber subdest;
+    ros::Subscriber subprevdest;
     ros::Subscriber subWheelAngle;
     ros::Subscriber subdismet;
     ros::Subscriber substop;
@@ -33,12 +34,17 @@ public:
     ros::Subscriber subforwardcenter;
     ros::Subscriber subforwardright;
     ros::Subscriber subforwardleft;
+    ros::Subscriber subrwheel;
+    ros::Subscriber sublwheel;
 
 
 
     tf2::Vector3    dest;
+    tf2::Vector3    prevdest = tf2::Vector3(0, 0, 0);
     tf2::Vector3    pos;
     tf2::Vector3    dir;
+    int             rwheel = 0;
+    int             lwheel = 0;
     float           backdistance = 0;
     float           max_speed;
     double           wheelAngle = 0;
@@ -56,6 +62,7 @@ public:
     float           fforwardleft = 1;
     double          sec;
     bool            pause = false;
+    bool            Stop = false;
     bool            rev = false;
     bool            revf = false;
     bool            center = false;
@@ -72,6 +79,7 @@ public:
     explicit    ComandReceiver(ros::NodeHandle *n);
     void        backDistance(const std_msgs::Float32::ConstPtr &msg);
     void        SetPoint(const algo::vector_msg::ConstPtr& msg);
+    void        SetPrevPoint(const algo::vector_msg::ConstPtr& msg);
     void        SetSpeed(const algo::vector_msg::ConstPtr& msg);
     void        Setdir(const nav_msgs::Odometry::ConstPtr &msg);
     void        Angle(const std_msgs::Float32::ConstPtr &msg);
@@ -91,6 +99,8 @@ public:
     void        forwardcenter(const std_msgs::Float32::ConstPtr &msg);
     void        forwardright(const std_msgs::Float32::ConstPtr &msg);
     void        forwardleft(const std_msgs::Float32::ConstPtr &msg);
+    void        Rwheel(const std_msgs::Int32::ConstPtr &msg);
+    void        Lwheel(const std_msgs::Int32::ConstPtr &msg);
 
 };
 

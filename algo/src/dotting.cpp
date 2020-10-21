@@ -7,7 +7,7 @@
 dotting::dotting(ros::NodeHandle *n) {
     Sector sector;
 
-    for (int i = 0; i != 1; i++)
+    for (int i = 0; i != 2; i++)
         sectors.push_back(sector);
     marker_pub = n->advertise<visualization_msgs::Marker>("visualization_marker", 10);
     pubdots = n->advertise<algo::vector_array>("dots", 1);
@@ -107,15 +107,22 @@ dotting::dotting(ros::NodeHandle *n) {
 //    sectors[0].leftdown[1] = -1.f;
 //    sectors[0].leftup[0] = 2.75f;
 //    sectors[0].leftup[1] = 1.f;
-    sectors[0].rightdown[0] = 1.f + 0.40f + 0.54f;
-    sectors[0].rightdown[1] = 0.37f + 3.04f - 2.75f;
-    sectors[0].rightup[0] = 1.f + 0.40f + 0.54f;
-    sectors[0].rightup[1] = 0.37f + 3.04f + 0.5f;
-    sectors[0].leftdown[0] = 1.f + 0.40f + 0.54f + 2.83f + 0.75f;
-    sectors[0].leftdown[1] = 0.37f + 3.04f - 2.75f;
-    sectors[0].leftup[0] = 1.f + 0.40f + 0.54f + 2.83f + 0.75f;
-    sectors[0].leftup[1] = 0.37f + 3.04f + 0.5f;
-
+    sectors[0].rightdown[0] = 0;
+    sectors[0].rightdown[1] = -10;
+    sectors[0].rightup[0] = 0;
+    sectors[0].rightup[1] = 0;
+    sectors[0].leftdown[0] = 5;
+    sectors[0].leftdown[1] = -10;
+    sectors[0].leftup[0] = 5;
+    sectors[0].leftup[1] = 0;
+    sectors[1].rightdown[0] = 2.24;
+    sectors[1].rightdown[1] = 0.05;
+    sectors[1].rightup[0] = 2.24;
+    sectors[1].rightup[1] = 3.5;
+    sectors[1].leftdown[0] = 7.61;
+    sectors[1].leftdown[1] = 0.05;
+    sectors[1].leftup[0] = 7.61;
+    sectors[1].leftup[1] = 3.5;
 
 
 
@@ -469,46 +476,77 @@ void    dotting::startdotting()
         {
            // dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
            // dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
-            dot[0] = 2;
-            dot[1] = -1;
-            dots.push_back(dot);
-            dot[0] = 2;
-            dot[1] = 1;
-            dots.push_back(dot);
-            dot[0] = 0;
-            dot[1] = -1;
-            dots.push_back(dot);
-            dot[0] = 0;
-            dot[1] = 1;
-            dots.push_back(dot);
+//            dot[0] = 3;
+//            dot[1] = 0;
+//            dots.push_back(dot);
+//            dot[0] = 5;
+//            dot[1] = 3;
+//            dots.push_back(dot);
+//            dot[0] = 5.5;
+//            dot[1] = 3.5;
+//            dots.push_back(dot);
+//            dot[0] = 4.5;
+//            dot[1] = 4;
+//            dots.push_back(dot);
+//            dot[0] = 5;
+//            dot[1] = 0;
+//            dots.push_back(dot);
+//            dot[0] = 5;
+//            dot[1] = -10;
+//            dots.push_back(dot);
+//            dot[0] = 3;
+//            dot[1] = -10;
+//            dots.push_back(dot);
+//            dot[0] = 3;
+//            dot[1] = 0;
+//            dots.push_back(dot);
+//            dot[0] = 1;
+//            dot[1] = 0;
+//            dots.push_back(dot);
+//            dot[0] = 1;
+//            dot[1] = -10;
+//            dots.push_back(dot);
+//            dot[0] = 3;
+//            dot[1] = -10;
+//            dots.push_back(dot);
+//            dot[0] = 3;
+//            dot[1] = 0;
+//            dots.push_back(dot);
+
+//            dot[0] = 0;
+//            dot[1] = -1;
+//            dots.push_back(dot);
+//            dot[0] = 0;
+//            dot[1] = 1;
+//            dots.push_back(dot);
         }
-        else if (i == 1)
+        //else if (i == 1)
+//        {
+//            dot[0] = 0.85;
+//            dot[1] = 0.25;
+//            dots.push_back(dot);
+//            dot[0] = 1.15;
+//            dot[1] = 0.25;
+//            dots.push_back(dot);
+//        } else if( i == 2)
+//        {
+//            dot[0] = 1.15;
+//            dot[1] = 0.75;
+//            dots.push_back(dot);
+//            dot[0] = 0.85;
+//            dot[1] = 0.75;
+//            dots.push_back(dot);
+//        }
+        createWay(sectors[i]);
+        if (i == 1)
         {
-            dot[0] = 0.85;
-            dot[1] = 0.25;
-            dots.push_back(dot);
-            dot[0] = 1.15;
-            dot[1] = 0.25;
-            dots.push_back(dot);
-        } else if( i == 2)
-        {
-            dot[0] = 1.15;
-            dot[1] = 0.75;
-            dots.push_back(dot);
-            dot[0] = 0.85;
-            dot[1] = 0.75;
-            dots.push_back(dot);
-        }
-        //createWay(sectors[i]);
-        /*if (i == 0)
-        {
-            dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
-            dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
-            dots.push_back(dot);
+        //    dot[0] = 1.f + 0.40f + 0.54f + 0.6f;
+        //    dot[1] = 0.37f + 3.04f - 2.75f + 0.6f;
+        //    dots.push_back(dot);
             dot[0] = 0;
             dot[1] = 0;
             dots.push_back(dot);
-        }*/
+        }
     }
     visualization_msgs::Marker line_list, points_list;
     line_list.header.frame_id = "/odom";
