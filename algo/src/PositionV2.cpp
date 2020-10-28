@@ -133,7 +133,8 @@ void PositionV2::motion(float msg)
 
 //        std::cout << dir.cross(toPos.normalized().cross(basicTop)).z() << std::endl;
     }
-    std::cout << TICKLENGHT * res - (buff - pos).length() << std::endl;
+//    std::cout << TICKLENGHT * res - (buff - pos).length() << std::endl;
+    std::cout << dir.angle(basic) << std::endl;
     tf2::Quaternion quat;
 
     tf2::Vector3 rot;

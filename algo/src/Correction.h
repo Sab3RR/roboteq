@@ -17,6 +17,7 @@ public:
 };
 
 class Correction {
+public:
     ros::Subscriber subrwheel;
     ros::Subscriber sublwheel;
 

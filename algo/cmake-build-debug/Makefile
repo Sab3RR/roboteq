@@ -1085,6 +1085,19 @@ geometry_msgs_generate_messages_py/fast:
 .PHONY : geometry_msgs_generate_messages_py/fast
 
 #=============================================================================
+# Target rules for targets named CorrectionMain
+
+# Build rule for target.
+CorrectionMain: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CorrectionMain
+.PHONY : CorrectionMain
+
+# fast build rule for target.
+CorrectionMain/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CorrectionMain.dir/build.make CMakeFiles/CorrectionMain.dir/build
+.PHONY : CorrectionMain/fast
+
+#=============================================================================
 # Target rules for targets named position
 
 # Build rule for target.
@@ -1357,6 +1370,33 @@ src/ComandReceiver.s: src/ComandReceiver.cpp.s
 src/ComandReceiver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ComandReciver.dir/build.make CMakeFiles/ComandReciver.dir/src/ComandReceiver.cpp.s
 .PHONY : src/ComandReceiver.cpp.s
+
+src/Correction.o: src/Correction.cpp.o
+
+.PHONY : src/Correction.o
+
+# target to build an object file
+src/Correction.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CorrectionMain.dir/build.make CMakeFiles/CorrectionMain.dir/src/Correction.cpp.o
+.PHONY : src/Correction.cpp.o
+
+src/Correction.i: src/Correction.cpp.i
+
+.PHONY : src/Correction.i
+
+# target to preprocess a source file
+src/Correction.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CorrectionMain.dir/build.make CMakeFiles/CorrectionMain.dir/src/Correction.cpp.i
+.PHONY : src/Correction.cpp.i
+
+src/Correction.s: src/Correction.cpp.s
+
+.PHONY : src/Correction.s
+
+# target to generate assembly for a file
+src/Correction.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CorrectionMain.dir/build.make CMakeFiles/CorrectionMain.dir/src/Correction.cpp.s
+.PHONY : src/Correction.cpp.s
 
 src/Encoders.o: src/Encoders.cpp.o
 
@@ -1847,6 +1887,7 @@ help:
 	@echo "... visualization_msgs_generate_messages_nodejs"
 	@echo "... visualization_msgs_generate_messages_py"
 	@echo "... ComandReciver"
+	@echo "... CorrectionMain"
 	@echo "... ObjectsV2"
 	@echo "... Walls"
 	@echo "... client"
@@ -1867,6 +1908,9 @@ help:
 	@echo "... src/ComandReceiver.o"
 	@echo "... src/ComandReceiver.i"
 	@echo "... src/ComandReceiver.s"
+	@echo "... src/Correction.o"
+	@echo "... src/Correction.i"
+	@echo "... src/Correction.s"
 	@echo "... src/Encoders.o"
 	@echo "... src/Encoders.i"
 	@echo "... src/Encoders.s"
