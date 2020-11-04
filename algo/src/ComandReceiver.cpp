@@ -14,6 +14,7 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
     subright = n->subscribe("Right", 1, &ComandReceiver::Right, this);
     pubAr = n->advertise<std_msgs::Float64MultiArray>("MotorForce", 1);
     pubTw = n->advertise<geometry_msgs::Twist>("cmd_vel", 10);
+    pubpincomand = n->advertise<std_msgs::String>("motorcomand", 100);
     substop = n->subscribe("stop", 1, &ComandReceiver::stop, this);
     subdismet = n->subscribe("backdistance", 1, &ComandReceiver::backDistance, this);
     subbackcenter = n->subscribe("backcenter", 1, &ComandReceiver::backcenter, this);
@@ -30,10 +31,16 @@ ComandReceiver::ComandReceiver(ros::NodeHandle *n)
     subforwardleft = n->subscribe("forwardleft", 1, &ComandReceiver::forwardleft, this);
     subrwheel = n->subscribe("rwheel_ticks", 1, &ComandReceiver::Rwheel, this);
     sublwheel = n->subscribe("lwheel_ticks", 1, &ComandReceiver::Lwheel, this);
+    submagnet = n->subscribe("magnit", 1, &ComandReceiver::Magnet, this);
 
 
     max_speed = 0;
     sleep(1);
+}
+
+void ComandReceiver::Magnet(const std_msgs::Bool::ConstPtr &msg)
+{
+    magnet = msg->data;
 }
 
 //
@@ -474,7 +481,37 @@ void ComandReceiver::Setdir(const nav_msgs::Odometry::ConstPtr &msg)
     if (rev || revf)
         Tw.linear.x *= -1;
     if (pause || Stop)
+    {
         Tw.linear.x = 0;
+        if (pause)
+        {
+            pubpincomand.publish("rackelon");
+            pubpincomand.publish("schetkaon");
+            pubpincomand.publish("turbinaoff");
+            pubpincomand.publish("pumpoff");
+        }
+        else
+        {
+            pubpincomand.publish("rackeloff");
+            pubpincomand.publish("schetkaoff");
+            pubpincomand.publish("turbinaoff");
+            pubpincomand.publish("pumpoff");
+        }
+    }
+    else
+    {
+        pubpincomand.publish("rackelon");
+        pubpincomand.publish("schetkaon");
+        if (magnet) {
+            pubpincomand.publish("turbinaon");
+            pubpincomand.publish("pumpon");
+        }
+        else
+        {
+            pubpincomand.publish("turbinaoff");
+            pubpincomand.publish("pumpoff");
+        }
+    }
 
     Tw.angular.z = wheel;
     if (angle > 1.2)

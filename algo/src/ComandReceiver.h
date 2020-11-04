@@ -12,6 +12,8 @@ class ComandReceiver {
 public:
     ros::Publisher  pubAr;
     ros::Publisher  pubTw;
+    ros::Publisher  pubpincomand;
+    ros::Subscriber submagnet;
     ros::Subscriber subdir;
     ros::Subscriber subpos;
     ros::Subscriber subdest;
@@ -74,9 +76,11 @@ public:
     bool            letforward = false;
     bool            letright = false;
     bool            letleft = false;
+    bool            magnet = false;
 
 
     explicit    ComandReceiver(ros::NodeHandle *n);
+    void        Magnet(const std_msgs::Bool::ConstPtr &msg);
     void        backDistance(const std_msgs::Float32::ConstPtr &msg);
     void        SetPoint(const algo::vector_msg::ConstPtr& msg);
     void        SetPrevPoint(const algo::vector_msg::ConstPtr& msg);
